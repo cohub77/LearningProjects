@@ -1,0 +1,30 @@
+from tkinter import *
+
+root = Tk()
+
+def on_click(i,j):
+    global p
+    if y[i][j] is not None:
+        print("This space is already taken. Please choose another one.")
+    else:
+        if p == True:
+            y[i][j] = "X"
+            buttons[i][j].config(text="X")
+        else:
+            y[i][j] = "O"
+            buttons[i][j].config(text="O")
+        if (checkWin(y) == False ):
+            p = not p
+        else:
+            print("WWWWWWWWWWWW")
+
+p = True
+y = [[None, None, None], [None, None, None], [None, None, None]]
+buttons = [[None, None, None], [None, None, None], [None, None, None]]
+
+for i in range(3):
+    for j in range(3):
+        buttons[i][j] = Button(root, text=" ", command=lambda i=i,j=j: on_click(i,j))
+        buttons[i][j].grid(row=i,column=j)
+
+root.mainloop()
