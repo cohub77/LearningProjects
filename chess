@@ -107,7 +107,7 @@ for i in range(8):
 images = {}
 for color in ["white", "black"]:
     for piece_type in ["pawn", "rook", "knight", "bishop", "queen", "king"]:
-        image_name = f"{color}_{piece_type}.png"
+        image_name = f"pieces/{color}_{piece_type}.png"
         images[image_name] = tk.PhotoImage(file=image_name)
 
 selected_piece = None
