@@ -52,6 +52,6 @@ def draw_board(board, pieces, images):
             color = "white"
         else:
             color = "black"
-        image_name = f"pieces/{color}_{piece.piece_type.lower()}.png"
+        image_name = f"chess game/pieces/{color}_{piece.piece_type.lower()}.png"
         image = images[image_name]
         board.create_image(piece.col * 50 + 25, piece.row * 50 + 25, image=image)
