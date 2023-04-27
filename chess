@@ -12,20 +12,57 @@ class Piece:
 
     def is_valid_move(self, dest_row, dest_col):
         if self.piece_type == "Pawn":
+            flag = True
+            for piece in pieces:
+                        if piece.row == dest_row and piece.col == dest_col and piece.color != self.color:
+                            flag = False
             # Pawns can move forward one or two squares from their starting row
             if self.color == "White":
                 if dest_row == self.row + 1 and dest_col == self.col:
-                    return True
-                elif dest_row == self.row + 2 and dest_col == self.col and self.row == 6:
-                    return True
+                    return flag
+                elif dest_row == self.row + 2 and dest_col == self.col and self.row == 1:
+                    return flag
+                # Pawns can capture diagonally
+                elif dest_row == self.row + 1 and abs(dest_col - self.col) == 1:
+                    # Check if there is a piece of the opposite color at the destination square
+                    for piece in pieces:
+                        if piece.row == dest_row and piece.col == dest_col and piece.color != self.color:
+                            return True
             else:
                 if dest_row == self.row - 1 and dest_col == self.col:
                     return True
-                elif dest_row == self.row - 2 and dest_col == self.col and self.row == 1:
+                elif dest_row == self.row - 2 and dest_col == self.col and self.row == 6:
                     return True
+                # Pawns can capture diagonally
+                elif dest_row == self.row - 1 and abs(dest_col - self.col) == 1:
+                    # Check if there is a piece of the opposite color at the destination square
+                    for piece in pieces:
+                        if piece.row == dest_row and piece.col == dest_col and piece.color != self.color:
+                            return True
         elif self.piece_type == "Bishop":
             # Bishops can move any number of squares diagonally
             if abs(dest_row - self.row) == abs(dest_col - self.col):
+                # Check if the path is clear
+                row_step = (dest_row - self.row) // abs(dest_row - self.row)
+                col_step = (dest_col - self.col) // abs(dest_col - self.col)
+                current_row = self.row + row_step
+                current_col = self.col + col_step
+                while current_row != dest_row or current_col != dest_col:
+                    # Check if there is a piece at this position
+                    for piece in pieces:
+                        if piece.row == current_row and piece.col == current_col:
+                            return False
+                    current_row += row_step
+                    current_col += col_step
+                # Check if there is a piece of the same color at the destination square
+                for piece in pieces:
+                    if piece.row == dest_row and piece.col == dest_col and piece.color == self.color:
+                        return False
+                return True
+    # Other pieces not implemented yet
+        elif self.piece_type == "Queen":
+            # Bishops can move any number of squares diagonally
+            if abs(dest_row - self.row) == abs(dest_col - self.col) or (dest_row == self.row or dest_col == self.col):
                 # Check if the path is clear
                 row_step = (dest_row - self.row) // abs(dest_row - self.row)
                 col_step = (dest_col - self.col) // abs(dest_col - self.col)
@@ -40,35 +77,49 @@ class Piece:
                     current_col += col_step
                 return True
         # Other pieces not implemented yet
-        return False
+        else:
+            return True
     
 def on_click(event):
     global selected_piece, current_player
     row = event.y // 50
     col = event.x // 50
+    # Dra        w a rectangle around the selected square
+    x0 = col * 50
+    y0 = row * 50
+    x1 = x0 + 50
+    y1 = y0 + 50
+    board.create_rectangle(x0, y0, x1, y1, outline="red", width=3, tags="selected_square")
     if selected_piece:
         # Check if the move is valid
-        # Move the selected piece to the clicked square
-        selected_piece.row = row
-        selected_piece.col = col
-        # Check if a piece of the opposite color was captured
-        for piece in pieces:
-            if piece.row == row and piece.col == col and piece.color != selected_piece.color:
-                pieces.remove(piece)
-                break
-        draw_board()
-        # Switch to the other player
-        if current_player == "White":
-            current_player = "Black"
-        else:
-            current_player = "White"
-        selected_piece = None
+        if selected_piece.is_valid_move(row, col):
+            # Move the selected piece to the clicked square
+            selected_piece.row = row
+            selected_piece.col = col
+            # Check if a piece of the opposite color was captured
+            for piece in pieces:
+                if piece.row == row and piece.col == col and piece.color != selected_piece.color:
+                    pieces.remove(piece)
+                    break
+            draw_board()
+            # Delete the rectangle around the selected square
+            board.delete("selected_square")
+            # Switch to the other player
+            if current_player == "White":
+                current_player = "Black"
+            else:
+                current_player = "White"
+        selected_piece = None      
+        board.delete("selected_square")
+
     else:
         # Check if a piece of the current player's color was clicked
         for piece in pieces:
             if piece.row == row and piece.col == col and piece.color == current_player:
                 selected_piece = piece
                 break
+            
+        
 def draw_board():
     board.delete("all")
     for i in range(8):
