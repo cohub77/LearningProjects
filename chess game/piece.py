@@ -142,11 +142,11 @@ class Rook(Piece):
                 return True
             
 class King(Piece):
-    def is_valid_move(self, dest_row, dest_col, pieces):
-         # Kings can move one square in any direction
-            if abs(dest_row - self.row) <= 1 and abs(dest_col - self.col) <= 1:
-                # Check if there is a piece of the same color at the destination square
-                for piece in pieces:
-                    if piece.row == dest_row and piece.col == dest_col and piece.color == self.color:
-                        return False
-                return True
+        def is_valid_move(self, dest_row, dest_col, pieces):
+            # Kings can move one square in any direction
+                if abs(dest_row - self.row) <= 1 and abs(dest_col - self.col) <= 1:
+                    # Check if there is a piece of the same color at the destination square
+                    for piece in pieces:
+                        if piece.row == dest_row and piece.col == dest_col and piece.color == self.color:
+                            return False
+                    return True
