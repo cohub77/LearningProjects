@@ -11,34 +11,23 @@ class Piece:
         return f"{self.color} {self.piece_type} at ({self.row}, {self.col})"
 
     def is_valid_move(self, dest_row, dest_col):
-        if self.piece_type == "Pawn":
-            flag = True
+        def is_opposite_color_piece_at_dest(dest_row, dest_col):
             for piece in pieces:
-                        if piece.row == dest_row and piece.col == dest_col and piece.color != self.color:
-                            flag = False
+                if piece.row == dest_row and piece.col == dest_col and piece.color != self.color:
+                    return True
+            return False
+
+        if self.piece_type == "Pawn":
+            row_change = 1 if self.color == "White" else -1
+            flag = not is_opposite_color_piece_at_dest(dest_row, dest_col)
             # Pawns can move forward one or two squares from their starting row
-            if self.color == "White":
-                if dest_row == self.row + 1 and dest_col == self.col:
-                    return flag
-                elif dest_row == self.row + 2 and dest_col == self.col and self.row == 1:
-                    return flag
-                # Pawns can capture diagonally
-                elif dest_row == self.row + 1 and abs(dest_col - self.col) == 1:
-                    # Check if there is a piece of the opposite color at the destination square
-                    for piece in pieces:
-                        if piece.row == dest_row and piece.col == dest_col and piece.color != self.color:
-                            return True
-            else:
-                if dest_row == self.row - 1 and dest_col == self.col:
-                    return flag
-                elif dest_row == self.row - 2 and dest_col == self.col and self.row == 6:
-                    return flag
-                # Pawns can capture diagonally
-                elif dest_row == self.row - 1 and abs(dest_col - self.col) == 1:
-                    # Check if there is a piece of the opposite color at the destination square
-                    for piece in pieces:
-                        if piece.row == dest_row and piece.col == dest_col and piece.color != self.color:
-                            return True
+            if dest_row == self.row + row_change and dest_col == self.col:
+                return flag
+            elif dest_row == self.row + 2 * row_change and dest_col == self.col and (self.row == 1 or self.row == 6):
+                return flag
+            # Pawns can capture diagonally
+            elif dest_row == self.row + row_change and abs(dest_col - self.col) == 1:
+                return is_opposite_color_piece_at_dest(dest_row, dest_col)
         elif self.piece_type == "Bishop":
             # Bishops can move any number of squares diagonally
             if abs(dest_row - self.row) == abs(dest_col - self.col):
