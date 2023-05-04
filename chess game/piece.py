@@ -1,7 +1,7 @@
 class Piece:
     def __init__(self, piece_type, color, row, col):
         self.piece_type = piece_type
-        self.color = color
+        self.color = color.capitalize()
         self.row = row
         self.col = col
 
@@ -10,7 +10,9 @@ class Piece:
 
     def is_valid_move(self, dest_row, dest_col, pieces):
         pass
-
+    
+    def copy(self):
+        return Piece(self.color, self.piece_type, self.row, self.col)
 
 
 class Pawn(Piece):
