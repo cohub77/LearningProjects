@@ -11,6 +11,8 @@ class Piece:
     def is_valid_move(self, dest_row, dest_col, pieces):
         pass
 
+
+
 class Pawn(Piece):
     def is_valid_move(self, dest_row, dest_col, pieces):
         flag = True
