@@ -1,7 +1,22 @@
+def is_in_check(player_color, pieces):
+    # Find the king of the player whose turn it is
+    for piece in pieces:
+        if piece.piece_type == "King" and piece.color == player_color:
+            king = piece
+            break
+
+    # Check if any of the opponent's pieces can move to the king's square
+    for piece in pieces:
+        if piece.color != player_color:
+            if piece.is_valid_move(king.row, king.col, pieces):
+                return True
+
+    return False
+
 def on_click(event, selected_piece, current_player, pieces, board, draw_board, images):
     row = event.y // 50
     col = event.x // 50
-    # Dra        w a rectangle around the selected square
+    # Draw a rectangle around the selected square
     x0 = col * 50
     y0 = row * 50
     x1 = x0 + 50
@@ -10,22 +25,40 @@ def on_click(event, selected_piece, current_player, pieces, board, draw_board, i
     if selected_piece:
         # Check if the move is valid
         if selected_piece.is_valid_move(row, col, pieces):
-            # Move the selected piece to the clicked square
-            selected_piece.row = row
-            selected_piece.col = col
-            # Check if a piece of the opposite color was captured
-            for piece in pieces:
+            # Make a copy of the pieces list to simulate the move
+            pieces_copy = [piece for piece in pieces]
+            for piece in pieces_copy:
+                if piece == selected_piece:
+                    piece.row = row
+                    piece.col = col
                 if piece.row == row and piece.col == col and piece.color != selected_piece.color:
-                    pieces.remove(piece)
-                    break
-            draw_board(board, pieces, images)
-            # Delete the rectangle around the selected square
-            board.delete("selected_square")
-            # Switch to the other player
-            if current_player == "White":
-                current_player = "Black"
-            else:
-                current_player = "White"
+                    pieces_copy.remove(piece)
+            
+            # Check if the move gets the player out of check
+            if not is_in_check(current_player, pieces_copy):
+                # Move the selected piece to the clicked square
+                selected_piece.row = row
+                selected_piece.col = col
+                # Check if a piece of the opposite color was captured
+                for piece in pieces:
+                    if piece.row == row and piece.col == col and piece.color != selected_piece.color:
+                        pieces.remove(piece)
+                        break
+                draw_board(board, pieces, images)
+                # Delete the rectangle around the selected square
+                board.delete("selected_square")
+                # Switch to the other player
+                if current_player == "White":
+                    next_player_color = "Black"
+                else:
+                    next_player_color = "White"
+                
+                # Check if the next player is in check
+                if is_in_check(next_player_color, pieces):
+                    print(f"{next_player_color} is in check!")
+                
+                current_player = next_player_color
+
         selected_piece = None      
         board.delete("selected_square")
 
@@ -35,8 +68,8 @@ def on_click(event, selected_piece, current_player, pieces, board, draw_board, i
             if piece.row == row and piece.col == col and piece.color == current_player:
                 selected_piece = piece
                 break
-    return selected_piece, current_player
 
+    return selected_piece, current_player
             
 def draw_board(board, pieces, images):
     board.delete("all")
