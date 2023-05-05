@@ -40,9 +40,10 @@ def on_click(event, selected_piece, current_player, pieces, board, draw_board, i
                         if piece.row == row and piece.col == col and piece.color != selected_piece.color:
                             pieces_copy.remove(piece)         
                     # Check if the move gets the player out of check
-                    if not king_in_check or (king_in_check and not is_in_check(current_player, pieces_copy)):                        # Move the selected piece to the clicked square
-                        selected_piece.row = row
-                        selected_piece.col = col
+                    if not king_in_check or (king_in_check and not is_in_check(current_player, pieces_copy)):
+                        # Update the selected piece's position only if the move is valid and doesn't put the king in check
+                        selected_piece.row, selected_piece.col = row, col
+                        
                         # Check if a piece of the opposite color was captured
                         for piece in pieces:
                             if piece.row == row and piece.col == col and piece.color != selected_piece.color:
@@ -60,11 +61,14 @@ def on_click(event, selected_piece, current_player, pieces, board, draw_board, i
                         # Check if the next player is in check
                         if is_in_check(next_player_color, pieces):
                             print(f"{next_player_color} is in check!")
-                        
+                            selected_piece = None
+                            draw_board(board, pieces, images, selected_piece)
                         current_player = next_player_color
 
                     else:
                         print(f"{current_player}'s king is in check. Invalid move.")
+                        selected_piece = None
+                        draw_board(board, pieces, images, selected_piece)
     
 
     else:
