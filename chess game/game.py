@@ -18,7 +18,6 @@ def on_click(event, selected_piece, current_player, pieces, board, draw_board, i
     col = event.x // 50
     king_in_check = is_in_check(current_player, pieces)
     if selected_piece:
-        # Check if the move is valid
         if selected_piece.row == row and selected_piece.col == col:
             selected_piece = None
             draw_board(board, pieces, images, selected_piece)
@@ -67,8 +66,6 @@ def on_click(event, selected_piece, current_player, pieces, board, draw_board, i
 
                     else:
                         print(f"{current_player}'s king is in check. Invalid move.")
-                        selected_piece = None
-                        draw_board(board, pieces, images, selected_piece)
     
 
     else:
